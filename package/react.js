@@ -24,6 +24,13 @@ const useStore = (api, selector) => {
  * 		const { name } = userStore()
  * 		const name = userStore(state => state.name)
  * }
+ *
+ * const count = useStore(state => state.name)
+				↓
+	React call useSyncExternalStore
+				↓
+	useSyncExternalStore call store.subscribe(listener)
+				↓
  */
 const create = (createState) => {
 	const api = createStore(createState);
