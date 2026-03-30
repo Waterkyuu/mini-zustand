@@ -1,16 +1,20 @@
-const createStore = (fn) => {
+const createStore = (createState) => {
     let state = null
     const listeners = new Set()
 
-    const getInitState = () => {
-        initState = fn()
-        return initState
-    }
+    const getInitState = () => initState
 
     const getState = () => state
 
-    const setState = () => {
-        
+    const setState = (partial, replace) => {
+        const nextPartialState = typeof partial === 'function' ? partial(state) : partial
+
+        if (nextPartialState !== state) {
+            const prevState = state
+            state = {...state, ...nextPartialState}            
+
+            listeners.forEach((listener) => listener(state, prevState))
+        }
     }
 
     const subscribe = (listener) => {
@@ -26,5 +30,10 @@ const createStore = (fn) => {
         subscribe
     }
 
+    const initState = (state = createState(setState, getState, api))
+
     return api
 }
+
+export { createStore }
+
