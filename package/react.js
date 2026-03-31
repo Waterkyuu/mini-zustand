@@ -1,16 +1,14 @@
-import { useCallback, useSyncExternalStore } from "react";
 import { createStore } from "./vanilla.js";
+import { useSyncExternalStore } from "./hooks.js";
 
 const useStore = (api, selector) => {
-	const slice = useSyncExternalStore(
+	const snapshot = useSyncExternalStore(
 		api.subscribe,
 		// Client Snapshot
-		useCallback(() => selector(api.getState()), [api, selector]),
-		// Server Snapshot
-		useCallback(() => selector(api.getInitState()), [api, selector]),
+		() => selector(api.getState()),
 	);
 
-	return slice;
+	return snapshot;
 };
 
 /**
@@ -38,8 +36,7 @@ const create = (createState) => {
 	const useBoundStore = (selector) => useStore(api, selector);
 
 	Object.assign(useBoundStore, api);
-	// Example
-	// const { userId } = useUserStore.getState();
+	// Example: const { userId } = useUserStore.getState();
 	return useBoundStore;
 };
 
